@@ -1,10 +1,9 @@
-from random import randint
-
-
-def makeArray(n):
+#Funcao para abertura do arquivo
+def abreArquivo():
+	txt = open('instancias-numericas/couting.txt','r').readlines()
 	array = []
-	for i in range(0,n):
-		array.append(randint(0,100))
+	for item in txt:
+		array.append(int(item.strip('\n')))	#Removo o \n de cada elemento do array
 		
 	return array
 	
@@ -26,10 +25,12 @@ def selectionSort(a,n):
 
 def main():
 	print('Selection Sort Program \n')
-	tamanho = int(input('Tamanho do array \n'))
-	array = makeArray(tamanho)
-	print(array)
+	array = abreArquivo()
+	tamanho = len(array)
+	print("Array desordenado: \n")
+	print(array,'\n')
 	array = selectionSort(array,tamanho)
-	print(array)
+	print("Array ordenado: \n")
+	print(array,'\n')
 	
 main()
