@@ -8,16 +8,6 @@ def abreArquivo():
 		
 	return array
 
-def pegaLoHi(A,n):
-	low =[]
-	high = []
-	for i in range(0,int(n/2)):
-		low.append(A[i])
-	
-	for j in range(int(n/2),n):
-		high.append(A[j])	
-	
-	return low,high
 
 def introQuickSort(A,tamanho):
 	quickSort(A,0,tamanho-1)
