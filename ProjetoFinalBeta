@@ -65,7 +65,7 @@ def print_arestas():
 	return	
 
 	
-#	-----	Cálcula o grau de importância de cada vértice
+#	-----	Calcula o grau de importância de cada vértice
 def vertex_grau():
 	# PRECISO ENCONTRAR UMA FORMA DE LIMPAR SEM PREJUDICAR O CÓDIGO
 	#dic_vertices = {}
@@ -87,11 +87,16 @@ def vertex_grau():
 
 # -----	Retorna os dois melhores vértices que possuem uma aresta 
 def vertex_melhor():
+	# *** Não devo escolher o mesmo vértice pela segunda vez se não entra em loop
+	# *** Tá com algum problema para remover algumas arestas que já foram utilizadas
 	aux_maior = 0
+	aux_vertice = 0
 	for item in dic_vertices:
 		if dic_vertices[item] > aux_maior: 
-			aux_maior = int(item)	# Item do dicionario com maior valor
-	return aux_maior	# Retorna o melhor vértice
+			aux_maior = dic_vertices[item]	# - Adiciona o grau daquele vértice para a variável maior
+			aux_vertice = int(item)			# - Adiciona a chave para a variável vértice
+			
+	return aux_vertice	# Retorna um dos melhores vértices
 
 # -----	Escolho uma aresta que contenha o melhor vértice	
 def	aresta_melhor(x):
@@ -106,6 +111,13 @@ def	aresta_melhor(x):
 			break
 		else:
 			pass
+	return
+
+# ----- Limpa o dicionário para recalcular o grau de cada vértice
+def limpa_dic():
+	for aresta in conj_arestas:
+		dic_vertices[aresta.u] = 0
+		dic_vertices[aresta.v] = 0
 	return
 
 #	-----	Função que excluí arestas e adiciona vértices em um conjunto
@@ -124,7 +136,6 @@ def vertex_cover():
 		melhor_aresta = aresta_melhor(melhor)
 		print("Aresta escolhida:", conj_vertices)
 
-		quit()	
 		# - Devo priorizar a escolha do melhor vértice 
 		#aux = random.choice(conj_arestas) 
 		#conj_vertices.add(aux.u)
@@ -146,6 +157,8 @@ def vertex_cover():
 			else:
 				#print("Fica", item.u, item.v)
 				pass
+				
+		limpa_dic()
 	
 	return	
 	
