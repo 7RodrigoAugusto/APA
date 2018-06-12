@@ -7,6 +7,9 @@
 #Para realizar a escolha aleatória de uma aresta
 import random
 
+# - Conjunto com todas as melhores soluções existentes
+conj_solucoes = set()
+
 # - Conjunto dos melhores vértices, ele é criado uma vez e vai diminuindo com os loops
 conj_melhores = set()
 
@@ -112,6 +115,23 @@ def vertex_melhor_grau():
 			aux_maior = dic_vertices[item]	# - Adiciona o grau daquele vértice para a variável maior
 			
 	return	aux_maior	# Retorna um dos melhores vértices
+	
+#	-----	Retorna um dos melhores vértices evitando escolher um daqueles que já foi utilizado
+def vertex_melhor_main():
+	aux_maior = 0
+	aux_vertice = 0
+	for item in dic_vertices:
+		if dic_vertices[item] > aux_maior: 
+			# - Ele só escolhe o melhor se ele ainda estiver no conjunto melhores
+			if item in conj_melhores:
+				aux_maior = dic_vertices[item]	# - Adiciona o grau daquele vértice para a variável maior
+				aux_vertice = int(item)			# - Adiciona a chave para a variável vértice
+				# - Remove do conjunto de melhores
+				conj_melhores.remove(item)
+			else:
+				pass
+			
+	return aux_vertice	# Retorna um dos melhores vértices
 
 #	-----	Retorna a quantidade de vértices existentes com aquele melhor grau e um conjunto com esses melhores
 def vertex_melhores():
@@ -127,7 +147,7 @@ def vertex_melhores():
 	return qtd_maior	
 
 #	-----	Limpa o dicionário e conj_vertex para recalcular o grau de cada vértice utilizada dentro de VERTEX_COVER()
-def limpa_vertex_cover():
+def limpa_vertex_grau():
 	# - Limpa set de vertex
 	conj_vertex.clear()
 	
@@ -214,25 +234,33 @@ def cria_arestas(objs):
 
 #	----------	VERTEX COVER	----------
 #	-----	Função que excluí arestas e adiciona vértices em um conjunto
-def vertex_cover():	
+def vertex_cover(melhor_main):	
+
 	# - Limpo antes de começar o loop pois o dicionário foi criado antes e deve estar limpo para vertex grau
-	limpa_vertex_cover()
+	# - * Vou parar de limpar pra seguir o conselho do melhor grau
+	#limpa_vertex_cover()
+	
+	# - Variável para evitar a realização do vertex_grau() no primeiro loop
+	aux = 0	
+	# - Utiliza de cara o melhor escolhido no main
+	melhor_v = melhor_main
 	# - Enquanto existirem arestas
 	while conj_arestas:	
 	
 		# - Print da quantidade de arestas
 		#print_arestas()
 		
-		# - Calcula o grau de importância de cada vértice naquele momento
-		vertex_grau()
-		print("Dicionário dos vértices com seu grau:",dic_vertices)
+		# - Só começa depois do primeiro loop
+		if aux > 0:
+			# - Calcula o grau de importância de cada vértice naquele momento
+			vertex_grau()
+			
+			#print("Dicionário dos vértices com seu grau:",dic_vertices)
 		
-		# - Encontro o vértice com maior grau
-		# Fazer um if na hora de escolher o vértice para testar se ele é realmente necessário
-		
-		melhor_v = vertex_melhor_elemento()
+			# - Encontro o vértice com maior grau
+			melhor_v = vertex_melhor_elemento()
 					
-		#print("Melhor vértice: ",melhor_v)
+		print("Melhor vértice: ",melhor_v)
 		
 		# - Escolho uma aresta que contenha esse vértice
 		melhor_aresta = aresta_melhor(melhor_v)
@@ -245,8 +273,11 @@ def vertex_cover():
 		remove_arestas()
 		
 		# - Limpa dicionário e set_vertex, para que novamente seja feita a contagem do grau
-		limpa_vertex_cover()
-		#print("\n")
+		limpa_vertex_grau()
+		
+		# - Incrementa aux para realizar seu proprio calculo de grau
+		aux = aux +1	
+		
 	return	
 #	----------	************************************	----------
 
@@ -257,6 +288,7 @@ def main():
 
 	# - Abre o arquivo e cria os elementos da classe aresta
 	elementos, qtd_vertices, qtd_arestas = abreArquivo()
+	#	----------	 INFORMAÇÕES	--------------
 	print("	----- INFORMAÇÕES ----- \n")
 	print("Quantidade inicial de vértices: \n",qtd_vertices)
 	print("Inicialmente temos:",len(conj_arestas),"arestas\n")
@@ -272,8 +304,7 @@ def main():
 	vertex_grau()
 	print("Grau de todos os vértices: ",dic_vertices,"\n")
 	
-	# - Calcula quantos vértices com o maior grau possível existem, para realizar um loop 
-	# testando todas as possibilidades de troca
+	# - Calcula quantos vértices com o maior grau possível existem, para realizar um loop testando todas as possibilidades de troca
 	# - Cria um conjunto com os melhores vértices iniciais
 	qtd_melhores = vertex_melhores()
 	
@@ -281,28 +312,40 @@ def main():
 	
 	print("Quantidade de elementos com o maior grau:",qtd_melhores,"\n")
 	
-	#while cond:
-	#	melhor_v = vertex_melhor_cover()
-	#	if melhor_v not in conj_melhores:
-	#		cond = True
-	#	else:
-	#		cond = False
-
+	#	----------	FIM INFORMAÇÕES	--------------
+	
+	
+	# - Limpa para começar o vertex_cover
+	limpa_vertex_grau()
+	
+	
+	#	----------	MAIN	--------------
 	
 	# - Função para a realização da cobertura de vértices
 	# - while tentando as novas soluções trocando meus vértices e testando
 	print("	----- Início do Loop -----\n")
-	# - ** Na verdade faço, enquanto existirem melhores loop 
-	while qtd_melhores:
-		print("Loop:", qtd_melhores,"\n")
 	
+	# - Enquanto existirem melhores
+	while conj_melhores:
+		#print("Loop:", qtd_melhores,"\n")
+		
+		# - Calcula o grau de cada vértice
+		# - Cria o dicionário
+		vertex_grau()
+		
+		# - Pega um dos melhores elementos
+		melhor_main = vertex_melhor_main()
+		
 		# - Retorna um vetor de binário que vai me fazer evitar de utilizar 
 		# o mesmo elemento no começo do próximo teste
-		vertex_cover()
+		vertex_cover(melhor_main)
 		
 		# - Print do conjunto final de vértices escolhidos pelo vertex_cover
 		print("Conjunto final de vértices escolhidos:",conj_vertices)		
-		print("Tamanho:",len(conj_vertices))	
+		print("Tamanho:",len(conj_vertices))
+		
+		# - Adiciono a solucao ao conjunto de solucoes	
+		conj_solucoes.add(len(conj_vertices))
 		
 		# - Prepara para a próxima iteração do loop
 		qtd_melhores = qtd_melhores - 1
@@ -314,9 +357,13 @@ def main():
 		limpa_total()	
 		
 		# - Teste de checagem para a próxima iteração
-		print("Pronto para a próxima iteração:\n")
+		#print("Pronto para a próxima iteração:\n")
 		#print_tudo()	#não é só zerar o dicionário é recriar ele
-		print(" Fim \n")	
+		#print(" Fim \n")	
+	
+		#	----------	FIM MAIN	--------------
+		
+	print("O conjunto de soluções é o seguinte:",conj_solucoes,"\n")
 	
 	return
 	
