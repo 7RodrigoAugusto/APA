@@ -31,6 +31,15 @@ class aresta:
 conj_arestas = []
 
 
+
+
+def print_tudo():
+	print("Conj de vertices:",conj_vertices,"\n")
+	print("Conj de vertices aux:",vertices_aux,"\n")
+	print("Conj de vertex:",conj_vertex,"\n")
+	print("Dicionario vertices:",dic_vertices,"\n")
+	return
+
 #	-----	Função para abrir arquivos e criar o conjunto de arestas
 def abreArquivo():
 	#frb30-15-mis/frb30-15-1.mis
@@ -51,15 +60,19 @@ def abreArquivo():
 	return array, qtd_vertices, qtd_arestas
 	
 
+
+
+
 #	----------	FUNÇÕES QUE MANIPULAM AS LISTAS E SETS DE VÉRTICES	----------
 	
 #	-----	Cria conjunto de todos os vértices para auxiliar na função limpa()
 def cria_vertices():
 	for item in conj_arestas:
-		vertices_aux.append(item.u)
-		vertices_aux.append(item.v)
+		if item.u not in vertices_aux:
+			vertices_aux.append(item.u)
+		if item.v not in vertices_aux:
+			vertices_aux.append(item.v)
 	return
-	
 	
 #	-----	Calcula o grau de importância de cada vértice
 def vertex_grau():
@@ -80,8 +93,8 @@ def vertex_grau():
 			pass
 	return
 
-#	-----	Retorna um dos melhores vértices, função particular utilizada somente dentro de vertex_cover()
-def vertex_melhor_cover():
+#	-----	Retorna um dos  melhores vértices, função particular utilizada somente dentro de VERTEX_COVER()
+def vertex_melhor_elemento():
 	aux_maior = 0
 	aux_vertice = 0
 	for item in dic_vertices:
@@ -89,23 +102,20 @@ def vertex_melhor_cover():
 			aux_maior = dic_vertices[item]	# - Adiciona o grau daquele vértice para a variável maior
 			aux_vertice = int(item)			# - Adiciona a chave para a variável vértice
 			
-	return aux_vertice, aux_maior	# Retorna um dos melhores vértices
+	return aux_vertice	# Retorna um dos melhores vértices
 
-
-#	-----	Retorna um dos melhores vértices que possua uma aresta no conjunto de arestas
-def vertex_melhor():
+#	-----	Retorna o melhor grau do dicionário
+def vertex_melhor_grau():
 	aux_maior = 0
-	aux_vertice = 0
 	for item in dic_vertices:
 		if dic_vertices[item] > aux_maior: 
 			aux_maior = dic_vertices[item]	# - Adiciona o grau daquele vértice para a variável maior
-			aux_vertice = int(item)			# - Adiciona a chave para a variável vértice
 			
-	return aux_vertice, aux_maior	# Retorna um dos melhores vértices
+	return	aux_maior	# Retorna um dos melhores vértices
 
-#	-----	Retorna a quantidade de vértices existentes com aquele melhor grau
+#	-----	Retorna a quantidade de vértices existentes com aquele melhor grau e um conjunto com esses melhores
 def vertex_melhores():
-	melhor_v, melhor_grau = vertex_melhor()
+	melhor_grau = vertex_melhor_grau()
 	qtd_maior = 0
 	aux_maior = 0
 	aux_vertice = 0
@@ -116,32 +126,34 @@ def vertex_melhores():
 			
 	return qtd_maior	
 
-#	-----	Limpa o dicionário e conj_vertex para recalcular o grau de cada vértice
+#	-----	Limpa o dicionário e conj_vertex para recalcular o grau de cada vértice utilizada dentro de VERTEX_COVER()
 def limpa_vertex_cover():
 	# - Limpa set de vertex
 	conj_vertex.clear()
 	
 	# - Limpa dicionário
 	# - Percorro todos os vértices existentes no lugar de arestas
-	for item in vertices_aux:
-		dic_vertices[item] = 0
+	dic_vertices.clear()
+	#for item in vertices_aux:
+	#	dic_vertices[item] = 0
 	return
 
 #	-----	Limpa tudo
 def limpa_total():
 	# - Limpa conj_vertices
 	conj_vertices.clear()
-
+	
 	# - Limpa set de vertex
 	conj_vertex.clear()
 	
 	# - Limpa dicionário
-	for item in vertices_aux:
-		dic_vertices[item] = 0
+	dic_vertices.clear()
+	#for item in vertices_aux:
+	#	dic_vertices[item] = 0
 	return
 
-
 #	----------	************************************	----------
+
 
 
 #	----------	FUNÇÕES QUE MANIPULAM A CLASSE ARESTA	----------
@@ -157,7 +169,6 @@ def print_arestas():
 	print(" ------------------------------ \n")
 	return	
 	
-
 #	-----	Escolho uma aresta que contenha o melhor vértice escolhido na função anterior	
 def	aresta_melhor(x):
 	# - *** Acredito que adicionando apenas 1 dos vértices a solução já seja possível
@@ -175,7 +186,6 @@ def	aresta_melhor(x):
 			pass
 	return
 	
-
 #	-----	Remover arestas que contenham elementos dos vértices já escolhidos
 def remove_arestas():
 	for item in reversed(conj_arestas):
@@ -199,10 +209,14 @@ def cria_arestas(objs):
 		
 #	----------	************************************	----------
 
+
+
+
 #	----------	VERTEX COVER	----------
 #	-----	Função que excluí arestas e adiciona vértices em um conjunto
 def vertex_cover():	
-
+	# - Limpo antes de começar o loop pois o dicionário foi criado antes e deve estar limpo para vertex grau
+	limpa_vertex_cover()
 	# - Enquanto existirem arestas
 	while conj_arestas:	
 	
@@ -211,12 +225,14 @@ def vertex_cover():
 		
 		# - Calcula o grau de importância de cada vértice naquele momento
 		vertex_grau()
-		#print("Dicionário dos vértices com seu grau:",dic_vertices)
+		print("Dicionário dos vértices com seu grau:",dic_vertices)
 		
 		# - Encontro o vértice com maior grau
 		# Fazer um if na hora de escolher o vértice para testar se ele é realmente necessário
-		melhor_v, melhor_grau = vertex_melhor_cover()
-		#print("Melhor vértice: ",melhor)
+		
+		melhor_v = vertex_melhor_elemento()
+					
+		#print("Melhor vértice: ",melhor_v)
 		
 		# - Escolho uma aresta que contenha esse vértice
 		melhor_aresta = aresta_melhor(melhor_v)
@@ -230,10 +246,10 @@ def vertex_cover():
 		
 		# - Limpa dicionário e set_vertex, para que novamente seja feita a contagem do grau
 		limpa_vertex_cover()
-		#quit()
 		#print("\n")
 	return	
 #	----------	************************************	----------
+
 
 		
 #	-----	main
@@ -241,14 +257,16 @@ def main():
 
 	# - Abre o arquivo e cria os elementos da classe aresta
 	elementos, qtd_vertices, qtd_arestas = abreArquivo()
+	print("	----- INFORMAÇÕES ----- \n")
 	print("Quantidade inicial de vértices: \n",qtd_vertices)
 	print("Inicialmente temos:",len(conj_arestas),"arestas\n")
 	
 	# - Cria lista dos vértices para ajudar na função limpa()
 	cria_vertices()
+	print("Vertices_aux:",vertices_aux,"\n")
 	
 	# - Apresenta o conjunto de arestas atual
-	#print_arestas()	
+	print_arestas()	
 	
 	# - Calcula o grau de cada vértice, para definir quantos loops serão feito em busca de uma nova solução
 	vertex_grau()
@@ -262,18 +280,29 @@ def main():
 	print("Conjunto dos melhores:",conj_melhores,"\n")
 	
 	print("Quantidade de elementos com o maior grau:",qtd_melhores,"\n")
+	
+	#while cond:
+	#	melhor_v = vertex_melhor_cover()
+	#	if melhor_v not in conj_melhores:
+	#		cond = True
+	#	else:
+	#		cond = False
 
 	
 	# - Função para a realização da cobertura de vértices
 	# - while tentando as novas soluções trocando meus vértices e testando
+	print("	----- Início do Loop -----\n")
+	# - ** Na verdade faço, enquanto existirem melhores loop 
 	while qtd_melhores:
+		print("Loop:", qtd_melhores,"\n")
+	
 		# - Retorna um vetor de binário que vai me fazer evitar de utilizar 
 		# o mesmo elemento no começo do próximo teste
 		vertex_cover()
 		
 		# - Print do conjunto final de vértices escolhidos pelo vertex_cover
-		print("Conjunto final de vértices escolhidos:",conj_vertices, "\tLoop:", qtd_melhores)		
-		print("Tamanho:\n",len(conj_vertices))	
+		print("Conjunto final de vértices escolhidos:",conj_vertices)		
+		print("Tamanho:",len(conj_vertices))	
 		
 		# - Prepara para a próxima iteração do loop
 		qtd_melhores = qtd_melhores - 1
@@ -282,7 +311,12 @@ def main():
 		cria_arestas(elementos) 
 		
 		# - Limpa tudo para que seja possível rodar vertex_cover() novamente
-		limpa_total()			
+		limpa_total()	
+		
+		# - Teste de checagem para a próxima iteração
+		print("Pronto para a próxima iteração:\n")
+		#print_tudo()	#não é só zerar o dicionário é recriar ele
+		print(" Fim \n")	
 	
 	return
 	
