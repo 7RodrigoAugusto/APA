@@ -30,6 +30,7 @@ conj_arestas = []
 
 #	-----	Função para abrir arquivos e criar o conjunto de arestas
 def abreArquivo():
+	#frb30-15-mis/frb30-15-1.mis
 	txt = open('frb30-15-mis/frb30-15-1.mis','r').readlines()
 	array = []
 	i = 0
@@ -121,6 +122,7 @@ def print_arestas():
 #	-----	Escolho uma aresta que contenha o melhor vértice escolhido na função anterior	
 def	aresta_melhor(x):
 	# - *** Acredito que adicionando apenas 1 dos vértices a solução já seja possível
+	# Realmente funciona, pois se já tá ligado ao vértice principal então ele já está sendo tocado e não precisa ser adicionado ao conjunto de vértices final
 	for item in conj_arestas:
 		if int(item.u) == x:
 			conj_vertices.add(item.u)
@@ -205,6 +207,8 @@ def main():
 	#print_arestas()	
 	
 	# - Função para a realização da cobertura de vértices
+	# - while tentando novas soluções
+	# trocando meus vértices e testando a possibilidade
 	vertex_cover()
 	
 	# - Print do conjunto final de vértices
