@@ -49,7 +49,7 @@ def print_tudo():
 #	-----	Função para abrir arquivos e criar o conjunto de arestas
 def abreArquivo():
 	#frb30-15-mis/frb30-15-1.mis
-	txt = open('frb30-15-mis/teste3.mis','r').readlines()
+	txt = open('frb30-15-mis/frb30-15-1.mis','r').readlines()
 	array = []
 	i = 0
 	for item in txt:
@@ -308,7 +308,8 @@ def respeita_cover(vetor_teste):
 	print(vetor_teste)
 	# - Se respeitar adiciona ele no vetores_solucao_extra
 	# - Vejo se ele consegue excluir todas as arestas e no final cria novamente
-	print_arestas()
+	#print_arestas()
+	print("Testando soluções")
 
 	remove_arestas_vnd(vetor_teste)
 	if not conj_arestas:
@@ -371,22 +372,53 @@ def vnd(elementos):
 	return				
 
 
-def teste_solucoes():
+def teste_solucoes(vetor_teste):
 	aux_teste = []
-	for item in vetores_solucoes_extra:
-		for x in item:
-			aux_teste
-			for aresta in conj_arestas:
-				if
-					#item.remove(x)
-
+	aux = 0
+	for item in vetor_teste:
+		#print("Testando:",item)
+		for x in range(aux, len(item)+1):
+			for y in range(aux+1,len(item)):
+				try:
+					#print("Testando",item[x],"com ",item[y])
+					for aresta in conj_arestas:
+						if item[x] == aresta.u and item[y] == aresta.v:
+							# Dai eu posso excluir um dos dois, de preferencia oq tiver a menor quantidade de arestas
+							#print("Elemento:",item[x],"valor:",dic_vertices[item[x]])
+							#print("Elemento:",item[y],"valor:",dic_vertices[item[y]])
+							if dic_vertices[item[x]] > dic_vertices[item[y]]:
+								item.remove(item[y])
+							elif dic_vertices[item[y]] > dic_vertices[item[x]]:
+								item.remove(item[x])
+							else:
+								item.remove(item[y])
+					
+				except:
+					pass
+			aux = aux+1
+		aux = 0
 	return
+		
+def grasp():
+#	Algoritmo 1. GRASP
+#Entrada: uma instância do problema e o número de iterações;
+#Saída: uma solução (sub-ótima);
+#01. enquanto (critério de parada não for satisfeito) faça
+#02. FaseConstrução(solução);
+#03. BuscaLocal(solução, Vizinhança(solução));
+#04. AtualizaSolução(MelhorSoluçãoEncontrada, solução);
+#05. fim_enquanto
+#06. S MelhorSoluçãoEncontrada;
+#07. retorne(S).
+	return		
+		
 		
 #	-----	main
 def main():
 
 	# - Abre o arquivo e cria os elementos da classe aresta
 	elementos, qtd_vertices, qtd_arestas = abreArquivo()
+	
 	#	----------	 INFORMAÇÕES	--------------
 	print("	----- INFORMAÇÕES ----- \n")
 	print("Quantidade inicial de vértices: \n",qtd_vertices)
@@ -428,8 +460,7 @@ def main():
 	while conj_melhores:
 		#print("Loop:", qtd_melhores,"\n")
 		
-		# - Calcula o grau de cada vértice
-		# - Cria o dicionário
+		# - Calcula o grau de cada vértice - Cria o dicionário
 		vertex_grau()
 		
 		# - Pega um dos melhores elementos
@@ -466,17 +497,30 @@ def main():
 	# - *** Ao fim eu vou pegar todos esses conjuntos de soluções e tentar alterar passo alguns vértices verificando a condição	
 	
 	print("O conjunto solução é o seguinte:",conj_solucao,"\n")
-	print("O conjunto de vetores solução é o seguinte:",vetores_solucao,"\n")
+	#print("O conjunto de vetores solução é o seguinte:",vetores_solucao,"\n")
 	
 	print("	----------	VND	---------- \n")
-	#cria_arestas(elementos) 
 	vnd(elementos)
 	
+	# - Prints após o VND e antes da remoção final de vértices
+	print("Resultados iniciais:\n")
+	print("O conjunto de vetores solução inicial é o seguinte:",vetores_solucao,"\n")
+	print("Resultados extras com a troca de vértices: \n")
+	print("O conjunto de vetores solução extra, após o VND é:",vetores_solucao_extra,"\n")
 	
-	print("Soluções extras, após o VND:",vetores_solucao_extra)
+	# - Calculo grau para utilizar na hora de excluir vertices
+	vertex_grau()
+	# - Função para ver se alguns vértices podem ser removidos
+	teste_solucoes(vetores_solucao)
+	teste_solucoes(vetores_solucao_extra)
 	
-	# Criar função para ver se tocam em alguma das arestas
-	teste_solucoes()
+	
+	# - Prints finais
+	print("Resultados com a remoção de vértices: \n")
+	print("Resultado melhorado das soluções iniciais:", vetores_solucao)
+	print("Resultado melhorado depois do VND:",vetores_solucao_extra)
+	
+	#grasp()
 			
 	
 	
