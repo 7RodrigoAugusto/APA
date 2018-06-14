@@ -51,7 +51,7 @@ def print_tudo():
 #	-----	Função para abrir arquivos e criar o conjunto de arestas
 def abreArquivo():
 	#frb30-15-mis/frb30-15-1.mis
-	txt = open('frb30-15-mis/teste2.mis','r').readlines()
+	txt = open('frb30-15-mis/teste3.mis','r').readlines()
 	array = []
 	i = 0
 	for item in txt:
@@ -282,21 +282,21 @@ def vertex_cover():
 
 #	---- Função que testa se a solução encontrada com a troca de vértices respeita a condição
 def respeita_cover(vetor_teste):
-	print(vetor_teste)
+	#print(vetor_teste)
 	# - Se respeitar adiciona ele no vetores_solucao_extra
 	# - Vejo se ele consegue excluir todas as arestas e no final cria novamente
 	#print_arestas()
-	print("Testando soluções")
+	#print("Testando soluções")
 
 	remove_arestas_vnd(vetor_teste)
 	if not conj_arestas:
-		print("Funcionou:",vetor_teste)
+		#print("Funcionou:",vetor_teste)
 		vetores_solucao_extra.append(vetor_teste)
 	else:
-		print("Não funcionou:",vetor_teste)
+		#print("Não funcionou:",vetor_teste)
 		remove_arestas_todas()
 	
-	print_arestas()
+	#print_arestas()
 	return
 
 def respeita_cover_final(vetor_teste):
@@ -323,7 +323,7 @@ def vnd(elementos):
 	#	-----	VND	-----
 	# - Crio as arestas novamente para poder fazer a conferência dentre as melhores soluções
 	for item in vetores_solucao:
-		print("Testando vetor:",item)	
+		#print("Testando vetor:",item)	
 		# - Testar se da pra ter uma nova solucao alterando alguns dos vertices
 		for x in item:
 			#print(x)
@@ -335,7 +335,7 @@ def vnd(elementos):
 				if x == aresta.u:
 					#print("Elemento:",x," na aresta",aresta.u,aresta.v)
 					if aresta.v not in item:
-						print("Vértice",aresta.v,"no lugar de",x)
+						#print("Vértice",aresta.v,"no lugar de",x)
 						# - Cria vetor teste
 						vetor_teste.append(aresta.v)
 						for i in item:
@@ -351,7 +351,7 @@ def vnd(elementos):
 				if x == aresta.v:
 					#print("Elemento:",x," na aresta",aresta.u,aresta.v)
 					if aresta.u not in item:
-						print("Vértice",aresta.u,"no lugar de",x)
+						#print("Vértice",aresta.u,"no lugar de",x)
 						# - print("O vertice ligado a ele pode ser testado como uma troca")
 						vetor_teste.append(aresta.u)
 						for i in item:
@@ -368,7 +368,7 @@ def vnd(elementos):
 	return				
 
 
-def remove_vertex(vetor_teste):
+def remove_vertex(vetor_teste,elementos):
 	aux_teste = []
 	aux = 0
 	for item in vetor_teste:
@@ -379,41 +379,22 @@ def remove_vertex(vetor_teste):
 					#print("Testando",item[x],"com ",item[y])
 					for aresta in conj_arestas:
 						item_aux = item
+						#print("Testando:",item_aux)
 						if (item[x] == aresta.u and item[y] == aresta.v) or (item[y] == aresta.u and item[x] == aresta.v):
-							
-							if dic_vertices[item[x]] > dic_vertices[item[y]]:
-								#print("Removo:",item[y])
-								item_aux.remove(item[y])
-								respeita_cover_final(item)
-							elif dic_vertices[item[y]] > dic_vertices[item[x]]:
-								#print("Removo:",item[x])
-								item_aux.remove(item[x])
-								respeita_cover_final(item)
-							else:
-								item_aux.remove(item[y])
-								respeita_cover_final(item)
-							#	item.append(item[y])
-							#	item.remove(item[x])
-							#	respeita_cover_final(item)
+							item_aux.remove(item[y]) 
+							respeita_cover(item_aux)
+							cria_arestas(elementos)
+							item_aux = item
+							item_aux.remove(item[x])
+							respeita_cover(item_aux)
+							cria_arestas(elementos)
+							item_aux = item
 					
 				except:
 					pass
 			aux = aux+1
 		aux = 0
-	return
-		
-#def grasp():
-#	Algoritmo 1. GRASP
-#Entrada: uma instância do problema e o número de iterações;
-#Saída: uma solução (sub-ótima);
-#01. enquanto (critério de parada não for satisfeito) faça
-#02. FaseConstrução(solução);
-#03. BuscaLocal(solução, Vizinhança(solução));
-#04. AtualizaSolução(MelhorSoluçãoEncontrada, solução);
-#05. fim_enquanto
-#06. S MelhorSoluçãoEncontrada;
-#07. retorne(S).
-#	return		
+	return	
 		
 		
 #	-----	main
@@ -475,8 +456,8 @@ def main():
 	
 	# - Função para ver se alguns vértices podem ser removidos, quando funcionar checa se respeita cover e
 	# da append pra vetores_solucao_final
-	remove_vertex(vetores_solucao)
-	remove_vertex(vetores_solucao_extra)
+	remove_vertex(vetores_solucao,elementos)
+	remove_vertex(vetores_solucao_extra,elementos)
 	
 	
 	# - Prints finais
